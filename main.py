@@ -7,7 +7,7 @@ import tkinter.simpledialog as tsd
 import cv2,os
 import csv
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageTk
 import pandas as pd
 import datetime
 import time
@@ -222,7 +222,7 @@ def TrainImages():
     recognizer.save("TrainingImageLabel\Trainner.yml")
     res = "Profile Saved Successfully"
     message1.configure(text=res)
-    message.configure(text='Total Registrations  : ' + str(ID[0]))
+    # message.configure(text='Total Registrations  : ' + str(ID[0]))
 
 ############################################################################################3
 
@@ -301,9 +301,14 @@ def TrackImages():
                 Id = 'Unknown'
                 bb = str(Id)
             cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
-        cv2.imshow('Taking Attendance [press p for present]', im)
+        cv2.imshow('Taking Attendance [press p for present, x for no attendance]', im)
         if (cv2.waitKey(1) == ord('p')):
             break
+        elif (cv2.waitKey(1) == ord('x')):
+            mess._show(title='Attendance Not Taken', message='You pressed "x", attendance not taken!')
+            cam.release()
+            cv2.destroyAllWindows()
+            return
     ts = time.time()
     date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
     exists = os.path.isfile("Attendance\Attendance_" + date + ".csv")
@@ -356,25 +361,31 @@ mont={'01':'January',
 ######################################## GUI FRONT-END ###########################################
 
 window = tk.Tk()
-window.geometry("1280x720+10+10")
+window.geometry("1290x735+125+10")
 window.resizable(False,False)
 window.title("FRAS")
 window.configure(background='#97a1cf')
 
-frame1 = tk.Frame(window, bg="#d4ff9c")
-frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
+bgimg=Image.open(r"images\bg1.jpg")           #background image
+bgimg=bgimg.resize((1290,735),Image.LANCZOS)
+photobg=ImageTk.PhotoImage(bgimg)
+bg_lb=Label(window,image=photobg)
+bg_lb.place(x=0,y=0,width=1290,height=735)
 
-frame2 = tk.Frame(window, bg="#a3ff9c")
-frame2.place(relx=0.51, rely=0.17, relwidth=0.38, relheight=0.80)
+frame2 = tk.Frame(window, bg="#d4ff9c")
+frame2.place(x=110,y=130,width=520,height=512)
+
+frame1 = tk.Frame(window, bg="#a3ff9c")
+frame1.place(x=660,y=130,width=530,height=512)
 
 message3 = tk.Label(window, text="Face Recognition Based Attendance System" ,fg="blue",bg="white" ,width=55 ,height=1,font=('comic', 29, ' bold '))
-message3.place(x=10, y=10)
-
-frame3 = tk.Frame(window, bg="#c4c6ce")
-frame3.place(relx=0.52, rely=0.09, relwidth=0.11, relheight=0.07)
+message3.place(x=0, y=10)
 
 frame4 = tk.Frame(window, bg="#c4c6ce")
-frame4.place(relx=0.36, rely=0.09, relwidth=0.16, relheight=0.07)
+frame4.place(x=480,y=75,width=180,height=40)
+
+frame3 = tk.Frame(window, bg="#c4c6ce")
+frame3.place(x=660,y=75,width=140,height=40)
 
 datef = tk.Label(frame4, text = date+"  | ", fg="black",bg="white" ,width=65 ,height=1,font=('comic', 22, ' bold '))
 datef.pack(fill='both',expand=1)
@@ -383,32 +394,36 @@ clock = tk.Label(frame3,fg="black",bg="white" ,width=65 ,height=1,font=('comic',
 clock.pack(fill='both',expand=1)
 tick()
 
-head2 = tk.Label(frame2, text="                        New Registration                        ", fg="black",bg="#00fcca" ,font=('comic', 17, ' bold ') )
-head2.grid(row=0,column=0)
+head2 = tk.Label(frame2, text="  NEW REGISTRATION", fg="black",bg="orange" ,font=('comic', 20, ' bold ') )
+head2.place(x=0,y=0,width=520)
 
-head1 = tk.Label(frame1, text="                        Registered Already                       ", fg="black",bg="#00fcca" ,font=('comic', 17, ' bold ') )
-head1.place(x=0,y=0)
+head1 = tk.Label(frame1, text=" REGISTERED ALREADY", fg="black",bg="orange" ,font=('comic', 20, ' bold ') )
+head1.place(x=0,y=0,width=530)
 
 lbl = tk.Label(frame2, text="Enter College ID",width=20  ,height=1  ,fg="black"  ,bg="#c79cff" ,font=('comic', 17, ' bold ') )
-lbl.place(x=80, y=55)
+lbl.place(x=95, y=55)
 
 txt = tk.Entry(frame2,width=32 ,fg="black",font=('comic', 15, ' bold '))
-txt.place(x=30, y=90)
+txt.place(x=30, y=100)
 
 lbl2 = tk.Label(frame2, text="Enter Name",width=20  ,fg="black"  ,bg="#c79cff" ,font=('comic', 17, ' bold '))
-lbl2.place(x=80, y=140)
+lbl2.place(x=95, y=170)
 
 txt2 = tk.Entry(frame2,width=32 ,fg="black",font=('comic', 15, ' bold ')  )
-txt2.place(x=30, y=175)
+txt2.place(x=30, y=215)
 
-message1 = tk.Label(frame2, text="1)Fill Details >> 2)Take Images >> 2)Save Profile" ,bg="white" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
-message1.place(x=7, y=230)
+message10 = tk.Label(window, text="Steps To Register:" ,bg="white" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
+message10.place(x=130, y=650)
+message1 = tk.Label(window, text="1)Fill Details >> 2)Take Images >> 3)Save Profile" ,bg="white" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
+message1.place(x=130, y=678)
+message11 = tk.Label(window, text="Press p to take attendance & x for no attendance" ,bg="white" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
+message11.place(x=690, y=660)
 
-message = tk.Label(frame2, text="" ,bg="#c79cff" ,fg="black"  ,width=39,height=1, activebackground = "#3ffc00" ,font=('comic', 16, ' bold '))
-message.place(x=7, y=450)
+message = tk.Label(frame2, text="" ,bg="#97a1cf" ,fg="black"  ,width=39,height=1, activebackground = "#3ffc00" ,font=('comic', 16, ' bold '))
+message.place(x=7, y=690)
 
-lbl3 = tk.Label(frame1, text="Attendance",width=20  ,fg="black"  ,bg="#c79cff"  ,height=1 ,font=('comic', 17, ' bold '))
-lbl3.place(x=100, y=115)
+lbl3 = tk.Label(frame1, text="TODAY'S ATTENDANCE",width=20  ,fg="black"  ,bg="#c79cff"  ,height=1 ,font=('comic', 19, ' bold '))
+lbl3.place(x=120, y=55)
 
 res=0
 exists = os.path.isfile("StudentDetails\StudentDetails.csv")
@@ -421,7 +436,7 @@ if exists:
     csvFile1.close()
 else:
     res = 0
-message.configure(text='Total Registrations till now  : '+str(res))
+# message.configure(text='Total Registrations till now  : '+str(res))
 
 ##################### MENUBAR #################################
 
@@ -439,8 +454,8 @@ tv.column('#0',width=82)
 tv.column('name',width=130)
 tv.column('date',width=133)
 tv.column('time',width=133)
-tv.grid(row=2,column=0,padx=(0,0),pady=(150,0),columnspan=4)
-tv.heading('#0',text ='ID')
+tv.grid(row=2,column=0,padx=(20,0),pady=(110,0),columnspan=4)
+tv.heading('#0',text ='COLLEGE ID')
 tv.heading('name',text ='NAME')
 tv.heading('date',text ='DATE')
 tv.heading('time',text ='TIME')
@@ -454,17 +469,17 @@ tv.configure(yscrollcommand=scroll.set)
 ###################### BUTTONS ##################################
 
 clearButton = tk.Button(frame2, text="CLEAR", cursor="hand2", command=clear  ,fg="black"  ,bg="#ff7221"  ,width=11 ,activebackground = "white" ,font=('comic', 11, ' bold '))
-clearButton.place(x=370, y=89)
+clearButton.place(x=390, y=99)
 clearButton2 = tk.Button(frame2, text="CLEAR",cursor="hand2", command=clear2  ,fg="black"  ,bg="#ff7221"  ,width=11 , activebackground = "white" ,font=('comic', 11, ' bold '))
-clearButton2.place(x=370, y=174)    
+clearButton2.place(x=390, y=214)    
 takeImg = tk.Button(frame2, text="TAKE IMAGE SAMPLE",cursor="hand2", command=TakeImages  ,fg="white"  ,bg="blue"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
-takeImg.place(x=30, y=300)
+takeImg.place(x=40, y=320)
 trainImg = tk.Button(frame2, text="SAVE PROFLE", cursor="hand2",command=psw ,fg="white"  ,bg="blue"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
-trainImg.place(x=30, y=380)
+trainImg.place(x=40, y=400)
 trackImg = tk.Button(frame1, text="TAKE ATTENDANCE", cursor="hand2", command=TrackImages  ,fg="white"  ,bg="blue"  ,width=35  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
-trackImg.place(x=30,y=50)
-quitWindow = tk.Button(frame1, text="EXIT FRAS", cursor="hand2",command=window.destroy  ,fg="black"  ,bg="red"  ,width=35 ,height=1, activebackground = "white" ,font=('comic', 16, ' bold '))
-quitWindow.place(x=30, y=450)
+trackImg.place(x=50,y=405)
+quitWindow = tk.Button(frame1, text="EXIT ATTENDANCE SYSTEM", cursor="hand2",command=window.destroy  ,fg="black"  ,bg="red"  ,width=35 ,height=1, activebackground = "white" ,font=('comic', 16, ' bold '))
+quitWindow.place(x=30, y=460)
 
 ##################### END ######################################
 
